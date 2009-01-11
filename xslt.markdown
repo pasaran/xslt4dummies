@@ -71,7 +71,7 @@ Stylesheet --- это набор правил-шаблонов, работающ
     которая будет скопирована в результирующее дерево.
     Все, что не в неймспейсе xsl просто копируется.
 
-*   XSL-конструкции, которые создают разметку или текст:
+*   XSLT-конструкции, которые создают разметку или текст:
 
     *   xsl:value-of
     *   xsl:text
@@ -80,13 +80,13 @@ Stylesheet --- это набор правил-шаблонов, работающ
     *   xsl:copy
     *   xsl:copy-of
 
-*   Управляющие xsl-конструкции:
+*   Управляющие xslt-конструкции:
 
     *   xsl:if
     *   xsl:choose
     *   xsl:for-each
 
-*   XSL-конструкции "меняющие контекст":
+*   XSLT-конструкции "меняющие контекст":
 
     *   xsl:apply-templates
     *   xsl:call-template
@@ -95,6 +95,34 @@ Stylesheet --- это набор правил-шаблонов, работающ
     На самом деле, контекст не обязательно меняется. Можно сказать, что это конструкции,
     позволяющие или поменять контекст, или же просто вызвать другой шаблон (или тот же самый).
     Т.е. они позволяют нам продолжить дальнейший обход дерева в нужном нам порядке.
+
+## Обход дерева
+
+1.  Начальный контекст устанавливается в ноду документа --- `/`.
+2.  Ищется шаблон, подходящий для контекстной ноды. Если нет явно заданного шаблона,
+    используется дефолтный.
+3.  Если в процессе выполнения шаблона встречаются конструкции
+
+    *   xsl:apply-templates
+    *   xsl:call-template
+    *   xsl:apply-imports
+
+    то контекст меняется соответственно и переходим к п.2
+4.  Если же этих конструкций нет, то результат --- literate result elements и
+    сгенеренные xsl-конструкциями элементы --- копируется в выходной дерево и
+    управление переходит в то место, откуда был вызван шаблон (вверх по стеку).
+
+## Дефолтные шаблоны
+
+    <xsl:template match="/ | *" mode="MODE">
+        <xsl:apply-templates mode="MODE"/>
+    </xsl:template>
+
+    <xsl:template match="@* | text()">
+        <xsl:value-of select="."/>
+    </xsl:template>
+
+    <xsl:template match="comment() | processing-instruction() | namespace::*"/>
 
 ## Literate result elements
 
@@ -118,6 +146,201 @@ Stylesheet --- это набор правил-шаблонов, работающ
 
 ### xsl:value-of
 
+Выводит строку --- результат вычисления xpath'а:
+
     <xsl:value-of select="XPATH"/>
+
+### xsl:text
+
+Выводит заданную строку текста:
+
+    <xsl:text>Тут какой-то текст</xsl:text>
+
+Нужно, главным образом, для того, чтобы не выводить лишних пробелов.
+
+### xsl:element
+
+Создает заданный элемент:
+
+    <xsl:element name="strong">
+        ...содержимое элемента...
+    </xsl:element>
+
+В данном случае в точности тоже самое, что и:
+
+    <strong>
+        ...содержимое элемента...
+    </strong>
+
+Осмысленный способ применения с динамически заданным именем элемента:
+
+    <xsl:element name="{/some/xpath/element/name}">
+        ...содержимое элемента...
+    </xsl:element>
+
+### xsl:attribute
+
+Создает атрибут:
+
+    <div>
+        <xsl:attribute name="class">my-class</xsl:attribute>
+        ...
+    </div>
+
+    <div>
+        <xsl:attribute name="{xpath}">...</xsl:attribute>
+    </div>
+
+Важный момент: атрибуты должны быть первыми потомками элемента. Вот так направильно:
+
+    <div>
+        <b>Текст</b>
+        <xsl:attribute name="class">my-div-class</xsl:attribute>
+    </div>
+
+### xsl:copy
+
+Копирует текущую ноду:
+
+    <xsl:template match="*[@class = 'before']">
+        <xsl:copy>
+            <xsl:attribute name="class">after</xsl:attribute>
+            <xsl:apply-templates/>
+        </xsl:copy>
+    </xsl:template>
+
+### xsl:copy-of
+
+Копирует заданную ноду со всем ее содержимым. Например, копируем все атрибуты ноды:
+
+    <xsl:template match="div">
+        <p>
+            <xsl:copy-of select="@*">
+            <xsl:apply-templates/>
+        </p>
+    </xsl:template>
+
+## Управляющие xslt-конструкции
+
+### xsl:if
+
+Выполнение блока, если выполнено условие:
+
+    <xsl:template match="page">
+        <div class="page">
+            <xsl:if test="@name = 'index'">
+                <xsl:attribute name="class">page page_index</xsl:attribute>
+            </xsl:if>
+            ...
+        </div>
+    </xsl:template>
+
+В атрибуте `test` содержится xpath, который приводится к типу boolen.
+У `xsl:if` отсутствует блок `else`, характерный для всех языков программирования.
+Вместо него нужно использовать конструкцию `xsl:choose`.
+
+### xsl:choose
+
+    <xsl:template match="page">
+        <div>
+            <xsl:choose>
+                <xsl:when test="@name = 'index'">
+                    <xsl:attribute name="class">page page_index</xsl:attribute>
+                </xsl:when>
+                <xsl:when test="@name = 'about'">
+                    <xsl:attribute name="class">page page_about</xsl:attribute>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:attribute name="class">page</xsl:attribute>
+                </xsl:otherwise>
+            </xsl:choose>
+            ...
+        </div>
+    </xsl:template>
+
+### xsl:for-each
+
+Цикл по нодесету, соответствующему заданному xpath'у:
+
+    <xsl:template match="items">
+        <xsl:for-each select="item">
+            ...сделать что-нибудь с каждым item'ом...
+        </xsl:for-each>
+    </xsl:template>
+
+Содержимое тега `xsl:for-each` представляет собой шаблон, применяющийся для каждой ноды,
+соответствующей xpath'у в атрибуте `select`. Т.е. мы проходим по всем нодам xpath'а,
+меняем контекст на соответствующую ноду и применяем шаблон к этим нодам.
+
+Аналогичный результат, но без `xsl:for-each`:
+
+    <xsl:template match="items">
+        <xsl:apply-templates select="item"/>
+    </xsl:template>
+
+    <xsl:template match="items/item">
+        ...сделать что-нибудь с каждым item'ом...
+    </xsl:template>
+
+## XSLT-конструкции "меняющие контекст"
+
+### xsl:apply-templates
+
+### xsl:call-template
+
+### xsl:apply-imports
+
+## Простейшие паттерны
+
+### Identity transform
+
+Шаблон, копирующий все исходное дерево в результирующее дерево:
+
+    <xsl:template match="*|@*|text()">
+        <xsl:copy>
+            <xsl:apply-templates select="*|@*|text()"/>
+        </xsl:copy>
+    </xsl:template>
+
+### "Проксирующий" запрос
+
+Это identity transform плюс дополнительные шаблоны.
+В данном примере заменяем `b` на `strong`, а все остальное копируем как есть:
+
+    <xsl:template match="*|@*|text()">
+        <xsl:copy>
+            <xsl:apply-templates select="*|@*|text()"/>
+        </xsl:copy>
+    </xsl:template>
+
+    <xsl:template match="b">
+        <strong>
+            <xsl:apply-templates select="*|@*|text()"/>
+        </strong>
+    </xsl:template>
+
+### Null transform
+
+Обходим все дерево, но ничего не выводим:
+
+    <xsl:template match="*|@*">
+        <xsl:apply-templates select="*|@*|text()"/>
+    </xsl:template>
+
+    <xsl:template match="text()"/>
+
+### "Фильтрующий шаблон"
+
+Это null transform плюс дополнительные шаблоны. Выводим все ссылки из `<a href="...">`:
+
+    <xsl:template match="*|@*">
+        <xsl:apply-templates select="*|@*|text()"/>
+    </xsl:template>
+
+    <xsl:template match="text()"/>
+
+    <xsl:template match="a[@href]">
+        <xsl:value-of select="@href"/>
+    </xsl:template>
 
 

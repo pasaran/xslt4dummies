@@ -6,7 +6,7 @@
 пересылаем эти файлы по сети.
 
     <?xml version="1.0" encoding="utf-8"?>
-    <?xsl-stylesheet type="text/xsl" href="index.xsl"?>
+    <?xml-stylesheet type="text/xsl" href="index.xsl"?>
 
     <!-- main page -->
     <page name="index" xmlns:lego="https://lego.yandex-team.ru">
