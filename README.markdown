@@ -4,5 +4,3 @@
 * [XPath](xpath.markdown)
 * [XSLT](xslt.markdown)
 
-
-
