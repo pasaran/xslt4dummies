@@ -1,5 +1,7 @@
 ## XPath
 
+### Location Paths
+
 `/`
 
 `/page/l-head/b-head-logo/name`
