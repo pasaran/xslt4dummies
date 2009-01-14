@@ -235,6 +235,7 @@ preceding, following, namespace
             <a name="i3"></a>
             <strong>Third <a href="http://www.google.com/search?q=element">element</a></strong>
         </item>
+        <item id="last">Last</item>
     </items>
 
 Предикаты:
@@ -262,7 +263,7 @@ preceding, following, namespace
 Предикаты --- это любые xpath'ы, возвращающие тип boolean.
 
 Если где-то требуется один тип, а по факту приходит другой, то случается *приведение типов*.
-В частности, абсолютно любой xpath можно привести к типам boolean и string.
+В частности, абсолютно любой xpath можно привести к типам boolean и string:
 
 *   Пустой нодесет дает `false`, не пустой --- `true`.
 *   Пустая строка дает `false`, не пустая --- `true`.
@@ -271,34 +272,84 @@ preceding, following, namespace
 Явным образом можно привести к типу boolean при помощи функции `boolean`:
 `boolean(/items/item)`, `boolean(2 + 2)`, `boolean('nop')`...
 
+Приведение к типу string:
 
-#### node-set -> string
+*   У каждой ноды элемента есть строковое значение --- все текстовые ноды, являющиеся
+    ее потомками, склеиваются в одну строку --- это и есть строковое значение ноды.
+*   Строковое значение нодесета --- это строковое значение его первой ноды.
 
-Берется первая нода из нодесета и ее текстовое значение. Т.е. 
+### Более сложные предикаты
 
+*   `/items/item[@id = 1]`
+*   `/items/item[text() = 'Last']`
+*   `/items/item[. = 'Last']` --- это не тоже самое, что и предыдущий xpath, `.` --- это
+    текущий контекстный узел.
+*   `/items/item[//text() = 'element']`
+*   `/items/item[strong/a = 'element']` или `/items/item[strong/a/text() = 'element']`
 
-    [. != ''] = [text() != '']
-    [. = 'some string']
-    [element = 'value']
-    [@attr = 'value']
-    [some-function()] (contains, starts-with)
+Когда мы сравниваем строку с нестроковым типом, он приводится к строке. Поэтому мы можем писать:
+`. = 'Last'`, `'strong/a = 'element'` и т.д.
+
+Помимо `=` мы можем использовать операторы `!=`, `&lt;`, `&lt;=`, `&gt;`, `&gt;=`:
+
+*   `/items/item[@id != 1]`
+*   `/items/item[@id &gt; 2]`
+
+Кроме того, мы можем использовать логические операторы `not`, `or`, `and`:
+
+*   `/items/item[(@id = 1 or @id = 3) and strong/a != 'element']`
+
+Важное замечание. При всей кажущейся одинаковости, эти два xpath'а разные:
+
+*   `/items/item[@class != 'item']`
+*   `/items/item[not(@class = 'item')]`
+
+    <items>
+        <item class="item">First</item>
+        <item>Second</item>
+        <item class="active">Third</item>
+        <item class="item">Last</item>
+    </items>
+
+Первый xpath выберет третий `item` --- у него есть атрибут `class` и он не равен `'item'`.
+А второй xpath выберет второй и третий `item`: для них не верно утверждение о том,
+что атрибут `class` для них равен `'item'` --- у второй ноды вообще нет атрибута `class`.
+
+### Функции
+
+Помимо того, что мы можем использовать в предикатах значения нод и атрибутов,
+мы можем еще и вычислять разнообразные функции от этих значений:
+
+    <items>
+        <item id="1">
+            <a name="i1"></a>
+            <strong>First <a href="http://en.wikipedia.org/wiki/Element">element</a></strong>
+        </item>
+        <item id="2">
+            <a name="i2"></a>
+            Second <a href="http://yandex.ru/yandsearch?text=google.com">element</a>
+        </item>
+        <item>
+            <a name="i3"></a>
+            <strong>Third <a href="http://www.google.com/search?q=element">element</a></strong>
+        </item>
+        <item id="last">Last</item>
+    </items>
+
+*   `/items/item[count(*) &gt; 1]` --- больше одного ребенка.
+*   `/items/item[contains(//a/@href, 'google.com')]` --- `item`, который содержит ссылку,
+    содержащую в урле `'google.com'`.
+*   `/items/item[starts-with(//a/@href, 'http://www.google.com')]` --- ссылка ведет на google.com.
+*   `/items/item[//*[string-length(text()) &gt; 5]]` --- все `item`, у которых есть "длинные" текстовые подноды.
+*   `//a/@href[substring-after(., 'text=') = 'google.com']`
+*   `//a/@href[substring-before(., '://') = 'http']`
+*   `//a/@href[substring(., 1, 4) = 'http']`
+*   `normalize-space(/items/item[@id = 2]/text())` --- `'Second'`
 
     name(), local-name(), namespace-uri()
 
-    [some-function() =<> value] (string-length, count, substring, substring-after, substring-before)
     [node-set = 'value'], [node-set = node-set]
     [expr and expr], [expr or expr], [not(expr)]
-    [a != b] vs. [not(a = b)]
-
-на самом деле предикат это xpath
-
-результатом xpath'а не обязательно должен быть node-set -
-
-это может быть число, строка, булевский тип
-
-типы: boolean, number, string, node-set
-
-приведение всего в string и boolean (string(), boolean())
 
 вложенные предикаты: node1[node2[expr]]
 
