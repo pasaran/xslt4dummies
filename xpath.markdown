@@ -340,27 +340,41 @@ preceding, following, namespace
 *   `/items/item[contains(//a/@href, 'google.com')]` --- `item`, который содержит ссылку,
     содержащую в урле `'google.com'`.
 *   `/items/item[starts-with(//a/@href, 'http://www.google.com')]` --- ссылка ведет на google.com.
-*   `/items/item[//*[string-length(text()) &gt; 5]]` --- все `item`, у которых есть "длинные" текстовые подноды.
+*   `/items/item[string-length(text()) &gt; 5]` --- все `item`, у которых есть "длинные" текстовые подноды.
 *   `//a/@href[substring-after(., 'text=') = 'google.com']`
 *   `//a/@href[substring-before(., '://') = 'http']`
 *   `//a/@href[substring(., 1, 4) = 'http']`
 *   `normalize-space(/items/item[@id = 2]/text())` --- `'Second'`
+*   `concat(substring-before(/items/item[2]//a/@href, '?'), '?text=запрос')`
 
-    name(), local-name(), namespace-uri()
+Поскольку предикатом может быть любой xpath, то, в частности, это может быть
+и xpath с предикатом:
+
+    /items/item[strong[a[@href]]]
+
+Предикатов может быть несколько:
+
+    /items/item[@id][position() &gt; 1]
+
+При этом второй предикат --- `position() &gt; 1` --- вычисляется в контексте результатов
+предшествущего xpath'а --- `/items/item[@id]`.
+
+Вообще говоря, предикаты некоммутативны: `[xpath1][xpath2]` и `[xpath2][xpath1]` не одно и тоже.
+Если второй предикат использует `position()`, то результаты будут разные:
+
+    <items>
+        <item id="1">First</item>
+        <item>Second</item>
+        <item id="3">Third</item>
+    </items>
+
+*   /items/item[@id][position() = 2] --- выбирает второй `item`, у которого есть атрибут `id`.
+*   /items/item[position() = 2][@id] --- пустой нодесет, потому что у второго `item`'а нет атрибута `id`.
+
+В случае, когда `[xpath1][xpath2]` совпадает с `[xpath2][xpath1]`,
+то это тоже самое, что и просто `[xpath1 and xpath2]`.
 
     [node-set = 'value'], [node-set = node-set]
-    [expr and expr], [expr or expr], [not(expr)]
 
-вложенные предикаты: node1[node2[expr]]
-
-множественные предикаты: node[expr][expr]
-
-[expr1][expr2] vs. [expr2][expr1] vs [expr1 and expr2]
-
-функции: normalize-space, concat, translate, true, false, lang
-
-floor, ceiling, round
-
-current, generate-id, document
 
 
