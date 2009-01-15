@@ -215,7 +215,7 @@ preceding, following, namespace
 *   `/items/item[position() = 1]` --- выбрать первый `item`
 *   `/items/item[1]` --- тоже самое, шоткат
 *   `/items/item[position() = -1]` --- пустой нодесет, т.к. position() всегда положительное число
-*   `/items/item[position() = last()] или `/items/item[last()]` --- выбрать последний `item`
+*   `/items/item[position() = last()]` или `/items/item[last()]` --- выбрать последний `item`
 *   `/items/item[position() &lt;= 5]` --- выбрать первые 5 элементов, если на самом деле элементов
     меньше, чем указано, будет выбрано сколько есть
 *   `/items/item[position() mod 2 = 0]` --- выбрать все чётные элементы
@@ -288,7 +288,7 @@ preceding, following, namespace
 *   `/items/item[strong/a = 'element']` или `/items/item[strong/a/text() = 'element']`
 
 Когда мы сравниваем строку с нестроковым типом, он приводится к строке. Поэтому мы можем писать:
-`. = 'Last'`, `'strong/a = 'element'` и т.д.
+`. = 'Last'`, `strong/a = 'element'` и т.д.
 
 Помимо `=` мы можем использовать операторы `!=`, `&lt;`, `&lt;=`, `&gt;`, `&gt;=`:
 
@@ -368,8 +368,8 @@ preceding, following, namespace
         <item id="3">Third</item>
     </items>
 
-*   /items/item[@id][position() = 2] --- выбирает второй `item`, у которого есть атрибут `id`.
-*   /items/item[position() = 2][@id] --- пустой нодесет, потому что у второго `item`'а нет атрибута `id`.
+*   `/items/item[@id][position() = 2]` --- выбирает второй `item`, у которого есть атрибут `id`.
+*   `/items/item[position() = 2][@id]` --- пустой нодесет, потому что у второго `item`'а нет атрибута `id`.
 
 В случае, когда `[xpath1][xpath2]` совпадает с `[xpath2][xpath1]`,
 то это тоже самое, что и просто `[xpath1 and xpath2]`.
