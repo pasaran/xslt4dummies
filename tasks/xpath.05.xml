@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="xpath.05.xsl"?>
+
+<contacts>
+    <contact>
+        <name>nop</name>
+        <email>nop@yandex-team.ru</email>
+        <phone type="mobile">223-322-223-322</phone>
+    </contact>
+    <contact>
+        <name>veged</name>
+        <email>veged@yandex-team.ru</email>
+        <phone type="work">666</phone>
+        <phone type="mobile">123-456-321-654</phone>
+    </contact>
+    <contact>
+        <name>tyv</name>
+        <email>tyv@yandex-team.ru</email>
+    </contact>
+    <contact>
+        <name>vitaly</name>
+        <email>vitaly@yandex-team.ru</email>
+        <phone type="work">03</phone>
+    </contact>
+</contacts>
+
