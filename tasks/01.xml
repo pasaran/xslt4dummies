@@ -1,0 +1,26 @@
+<persons>
+    <person>
+        <login>nop</login>
+        <email>nop@yandex-team.ru</email>
+        <phone type="mobile">223-322-223-322</phone>
+        <group>xslt</group>
+    </person>
+    <person>
+        <login>veged</login>
+        <email>veged@yandex-team.ru</email>
+        <phone type="work">666</phone>
+        <phone type="mobile">123-456-321-654</phone>
+        <group>xslt</group>
+    </person>
+    <person>
+        <login>tyv</login>
+        <email>tyv@yandex-team.ru</email>
+        <group>html</group>
+    </person>
+    <person>
+        <login>botanidze</login>
+        <email>vitaly@yandex-team.ru</email>
+        <phone type="work">03</phone>
+        <group>html</group>
+    </person>
+</persons>

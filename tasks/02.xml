@@ -1,0 +1,25 @@
+<items>
+    <item id="1" class="a">
+        <item id="1.1" class="b">
+            <item id="1.1.1" class="a">
+                <item id="1.1.1.1" class="a">3</item>
+                <item id="1.1.1.2" class="b">7</item>
+                <item id="1.1.1.3" class="a">2</item>
+            </item>
+        </item>
+        <item id="1.2" class="a">9</item>
+    </item>
+    <item id="2" class="b">
+        <item id="2.1" class="a">
+            <item id="2.1.1" class="b">4</item>
+            <item id="2.1.2" class="a">8</item>
+        </item>
+        <item id="2.2" class="c">9</item>
+        <item id="2.3" class="a">
+            <item id="2.3.1" class="b">2</item>
+        </item>
+    </item>
+    <item id="3" class="b">
+        <itemd id="3.1" class="c">3</item>
+    </item>
+</items>

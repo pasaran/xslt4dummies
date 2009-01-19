@@ -1,0 +1,36 @@
+<items>
+    <good>1,3,4</good>
+    <bad>2,3,5</bad>
+    <item id="first">
+        <value>50</value>
+        <related>
+            <id>second</id>
+            <id>third</id>
+            <id>fourth</id>
+        </related>
+    </item>
+    <item id="second">
+        <value>20</value>
+        <related>
+            <id>first</id>
+        </related>
+    </item>
+    <item id="third">
+        <value>30</value>
+        <related>
+            <id>fourth</id>
+        </related>
+    </item>
+    <item id="fourth">
+        <value>10</value>
+        <related>
+            <id>first</id>
+        </related>
+    </item>
+    <item id="last">
+        <value>40</value>
+        <related>
+            <id>first</id>
+        </related>
+    </item>
+</items>
