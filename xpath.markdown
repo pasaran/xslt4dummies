@@ -339,6 +339,8 @@ XPath'ы, начинающиеся с символа `/` называются *�
 *   `/items/item[@class != 'item']`
 *   `/items/item[not(@class = 'item')]`
 
+Пример:
+
     <items>
         <item class="item">First</item>
         <item>Second</item>
